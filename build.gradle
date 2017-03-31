@@ -1,0 +1,63 @@
+//========================================
+// 命令 $gradle build
+//========================================
+
+// 插件
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'war'
+
+// 引用gretty插件
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'org.akhikhl.gretty:gretty:+'
+    }
+}
+apply plugin: 'org.akhikhl.gretty'
+
+// 项目信息
+//sourceCompatibility = 1.7 // 编译java源码的jdk版本
+//targetCompatibility = 1.7 // 生成class文件的jdk版本
+version = '0.1.0'
+//buildDir = 'target'
+
+// maven仓库
+repositories {
+    maven {
+        url "http://192.168.88.8:8081/nexus/content/groups/public/"
+    }
+}
+
+// gradle在编译时支持utf8编码
+[compileJava, javadoc, compileTestJava]*.options*.encoding = 'UTF-8'
+
+// 项目依赖
+dependencies {
+
+    compile(
+            [group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0']
+    )
+
+}
+
+// web应用中的gretty配置
+// 运行 $gradle appRun
+// 使用http://localhost:23001/yuhang 访问
+gretty {
+    httpEnabled = true
+    httpPort = 23001
+
+    httpsEnabled = true
+    httpsPort = 23002
+
+    contextPath = 'yuhang'
+
+    fastReload = true   // 监听webapp中的内容，用于热部署
+    scanInterval = 1    // 每1秒扫描一次，用于热部署
+}
+
+// 打war包 $gradle war
