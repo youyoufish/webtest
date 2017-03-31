@@ -10,12 +10,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Created by upsmart on 17-3-31.
  */
-@WebServlet(urlPatterns = "/aservlet", asyncSupported = true)
+//@WebServlet(urlPatterns = "/aservlet", asyncSupported = true)
 public class AsyncServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
@@ -40,10 +42,17 @@ public class AsyncServlet extends HttpServlet {
         asyncCtx.addListener(new AppAsyncListener());
         asyncCtx.setTimeout(9000);
 
-        ThreadPoolExecutor executor = (ThreadPoolExecutor) request
-                .getServletContext().getAttribute("executor");
+        ThreadPoolExecutor executor = (ThreadPoolExecutor) request.getServletContext().getAttribute("executor");
 
-        executor.execute(new AsyncRequestProcessor(asyncCtx, secs));
+        try{
+            executor.execute(new AsyncRequestProcessor(asyncCtx, secs));
+        }
+        catch( RejectedExecutionException re){
+            // 工作等待队列满
+            PrintWriter out = response.getWriter();
+            out.write("task queue is full!");
+        }
+        
         long endTime = System.currentTimeMillis();
         System.out.println("AsyncLongRunningServlet End::Name="
                 + Thread.currentThread().getName() + "::ID="

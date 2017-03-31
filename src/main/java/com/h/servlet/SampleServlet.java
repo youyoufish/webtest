@@ -1,6 +1,7 @@
 package com.h.servlet;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -10,6 +11,7 @@ import java.io.*;
 /**
  * 最基础的servlet
  */
+//@WebServlet("/servlet")
 public class SampleServlet extends HttpServlet {
 
     // gradle jetty: http://localhost:23001/hang535/servlet
