@@ -1,5 +1,6 @@
 package com.h.servlet;
 
+import com.h.common.Constant;
 import com.h.listener.AppAsyncListener;
 import com.h.processor.AsyncRequestProcessor;
 
@@ -42,17 +43,15 @@ public class AsyncServlet extends HttpServlet {
         asyncCtx.addListener(new AppAsyncListener());
         asyncCtx.setTimeout(9000);
 
-        ThreadPoolExecutor executor = (ThreadPoolExecutor) request.getServletContext().getAttribute("executor");
+        ThreadPoolExecutor executor = (ThreadPoolExecutor) request.getServletContext().getAttribute(Constant.THREAD_POOL_NAME);
 
         try{
             executor.execute(new AsyncRequestProcessor(asyncCtx, secs));
         }
         catch( RejectedExecutionException re){
-            // 工作等待队列满
-            PrintWriter out = response.getWriter();
-            out.write("task queue is full!");
+            // 工作等待队列满异常
         }
-        
+
         long endTime = System.currentTimeMillis();
         System.out.println("AsyncLongRunningServlet End::Name="
                 + Thread.currentThread().getName() + "::ID="
